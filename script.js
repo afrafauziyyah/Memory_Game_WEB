@@ -10,7 +10,7 @@ let interval;
 let firstCard = false;
 let secondCard = false;
 
-//Items array
+//Susunan items
 const items = [
   { name: "bee", image: "img/bee.png" },
   { name: "crocodile", image: "img/crocodile.png" },
@@ -26,46 +26,46 @@ const items = [
   { name: "toucan", image: "img/toucan.png" },
 ];
 
-//Initial Time
+//Waktu Awal
 let seconds = 0,
   minutes = 0;
-//Initial moves and win count
+//Pergerakan awal dan jumlah kemenangan
 let movesCount = 0,
   winCount = 0;
 
-//For timer
+//Untuk pengatur waktu
 const timeGenerator = () => {
   seconds += 1;
-  //minutes logic
+  //logika menit
   if (seconds >= 60) {
     minutes += 1;
     seconds = 0;
   }
-  //format time before displaying
+  //format waktu sebelum ditampilkan
   let secondsValue = seconds < 10 ? `0${seconds}` : seconds;
   let minutesValue = minutes < 10 ? `0${minutes}` : minutes;
   timeValue.innerHTML = `<span>Time:</span>${minutesValue}:${secondsValue}`;
 };
 
-//For calculating moves
+//Untuk menghitung gerakan
 const movesCounter = () => {
   movesCount += 1;
   moves.innerHTML = `<span>Moves:</span>${movesCount}`;
 };
 
-//Pick random objects from the items array
+//Pilih objek acak dari array item
 const generateRandom = (size = 4) => {
-  //temporary array
+  //array sementara
   let tempArray = [...items];
-  //initializes cardValues array
+  //menginisialisasi array cardValues
   let cardValues = [];
-  //size should be double (4*4 matrix)/2 since pairs of objects would exist
+  //ukuran harus ganda (matriks 4*4)/2 karena akan ada pasangan objek
   size = (size * size) / 2;
-  //Random object selection
+  //Pemilihan objek secara acak
   for (let i = 0; i < size; i++) {
     const randomIndex = Math.floor(Math.random() * tempArray.length);
     cardValues.push(tempArray[randomIndex]);
-    //once selected remove the object from temp array
+    //setelah dipilih, hapus objek dari array temp
     tempArray.splice(randomIndex, 1);
   }
   return cardValues;
@@ -74,14 +74,14 @@ const generateRandom = (size = 4) => {
 const matrixGenerator = (cardValues, size = 4) => {
   gameContainer.innerHTML = "";
   cardValues = [...cardValues, ...cardValues];
-  //simple shuffle
+  //acak kartu
   cardValues.sort(() => Math.random() - 0.5);
   for (let i = 0; i < size * size; i++) {
-    /*
-        Create Cards
-        before => front side (contains question mark)
-        after => back side (contains actual image);
-        data-card-values is a custom attribute which stores the names of the cards to match later
+     /*
+        Buat Kartu
+        sebelum => sisi depan (berisi tanda tanya)
+        sesudah => sisi belakang (berisi gambar sebenarnya);
+        data-card-values ​​adalah atribut khusus yang menyimpan nama kartu untuk dicocokkan nanti
       */
     gameContainer.innerHTML += `
      <div class="card-container" data-card-value="${cardValues[i].name}">
@@ -98,39 +98,39 @@ const matrixGenerator = (cardValues, size = 4) => {
   cards = document.querySelectorAll(".card-container");
   cards.forEach((card) => {
     card.addEventListener("click", () => {
-      //If selected card is not matched yet then only run (i.e already matched card when clicked would be ignored)
+      //Jika kartu yang dipilih belum cocok maka jalankan saja (yaitu kartu yang sudah cocok ketika diklik akan diabaikan)
       if (!card.classList.contains("matched")) {
-        //flip the cliked card
+        //membalik kartu yang diklik
         card.classList.add("flipped");
-        //if it is the firstcard (!firstCard since firstCard is initially false)
+        //jika itu adalah kartu pertama (!firstCard karena firstCard awalnya salah)
         if (!firstCard) {
-          //so current card will become firstCard
+          //jadi kartu saat ini akan menjadi Kartu pertama
           firstCard = card;
-          //current cards value becomes firstCardValue
+          //nilai kartu saat ini menjadi firstCardValue
           firstCardValue = card.getAttribute("data-card-value");
         } else {
-          //increment moves since user selected second card
+          //peningkatan pergerakan sejak pengguna memilih kartu kedua
           movesCounter();
-          //secondCard and value
+          //Kartu kedua dan value
           secondCard = card;
           let secondCardValue = card.getAttribute("data-card-value");
           if (firstCardValue == secondCardValue) {
-            //if both cards match add matched class so these cards would beignored next time
+            //jika kedua kartu cocok, tambahkan kelas yang cocok sehingga kartu ini akan diabaikan di lain waktu
             firstCard.classList.add("matched");
             secondCard.classList.add("matched");
-            //set firstCard to false since next card would be first now
+            //setel firstCard ke false karena kartu berikutnya akan menjadi yang pertama sekarang
             firstCard = false;
-            //winCount increment as user found a correct match
+            //peningkatan winCount saat pengguna menemukan kecocokan yang benar
             winCount += 1;
-            //check if winCount ==half of cardValues
+            //periksa apakah winCount == setengah dari cardValues
             if (winCount == Math.floor(cardValues.length / 2)) {
-              result.innerHTML = `<h2>You Won</h2>
+              result.innerHTML = `<h2>Yey! Kamu menang😍</h2>
             <h4>Moves: ${movesCount}</h4>`;
               stopGame();
             }
           } else {
-            //if the cards dont match
-            //flip the cards back to normal
+            //jika kartu tidak cocok
+            //balikkan kartu ke normal
             let [tempFirst, tempSecond] = [firstCard, secondCard];
             firstCard = false;
             secondCard = false;
@@ -145,23 +145,23 @@ const matrixGenerator = (cardValues, size = 4) => {
   });
 };
 
-//Start game
+//memulai game
 startButton.addEventListener("click", () => {
   movesCount = 0;
   seconds = 0;
   minutes = 0;
-  //controls amd buttons visibility
+  //kontrol dan visibilitas button
   controls.classList.add("hide");
   stopButton.classList.remove("hide");
   startButton.classList.add("hide");
-  //Start timer
+  //memulai timer
   interval = setInterval(timeGenerator, 1000);
-  //initial moves
+  //gerakan awal
   moves.innerHTML = `<span>Moves:</span> ${movesCount}`;
   initializer();
 });
 
-//Stop game
+//memberhentikan game
 stopButton.addEventListener(
   "click",
   (stopGame = () => {
@@ -172,7 +172,7 @@ stopButton.addEventListener(
   })
 );
 
-//Initialize values and func calls
+//Inisialisasi nilai dan panggilan fungsi
 const initializer = () => {
   result.innerText = "";
   winCount = 0;
